@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, HorrorMovieActivity!</string>
+    <string name="app_name">恐怖电影资料集</string>
+    <string name="about">关于</string>
+    <string name="area">地区</string>
+    <string name="niubi">牛逼</string>
+    <string name="desc">描述</string>
+    
+    <color name="black">#000000</color>
+    
+</resources>
