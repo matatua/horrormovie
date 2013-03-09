@@ -38,8 +38,9 @@
 
     <RelativeLayout
         android:id="@+id/layout_calendar"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/layout_top"
         android:layout_centerVertical="true"
         android:orientation="vertical" >
 
@@ -54,6 +55,7 @@
             android:id="@+id/layout_calendar_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/layout_calendar_header"
             android:orientation="vertical" >
         </LinearLayout>
     </RelativeLayout>
@@ -63,6 +65,7 @@
         android:layout_width="wrap_content"
         android:layout_height="40dip"
         android:layout_alignParentBottom="true"
+        android:layout_below="@id/layout_calendar"
         android:orientation="horizontal" >
 
         <Button
