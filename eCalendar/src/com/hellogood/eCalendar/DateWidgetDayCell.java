@@ -3,7 +3,6 @@ package com.hellogood.eCalendar;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import android.R.color;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -42,6 +41,7 @@ public class DateWidgetDayCell extends View {
 	private Paint pt = new Paint();
 	private RectF rect = new RectF();
 	private String sDate = "";
+	private String lDate = "";
 
 	// ��ǰ����
 	private int iDateYear = 0;
@@ -175,7 +175,8 @@ public class DateWidgetDayCell extends View {
 
 		canvas.drawText(sDate, iPosX, iPosY, pt);
 
-		pt.setUnderlineText(true);
+		pt.setUnderlineText(true);	
+		
 	}
 
 	public void drawLunarNumber(Canvas canvas) {
@@ -202,14 +203,15 @@ public class DateWidgetDayCell extends View {
 
 		final int iPosY = this.getHeight();
 		Calendar cal = new GregorianCalendar(iDateYear, iDateMonth, iDateDay);
-		if(iDateYear>=1900){
-		lunar = new Lunar(cal);
-		sDate = lunar.getChineseDay();
-		pt.setTextSize(18);
-		canvas.drawText(sDate, iPosX, iPosY, pt);
+		if (iDateYear >= 1900) {
+			lunar = new Lunar(cal);
+			lDate = lunar.getChineseDay();
+			pt.setTextSize(18);
+			canvas.drawText(lDate, iPosX, iPosY, pt);
 
-		pt.setUnderlineText(true);
+			pt.setUnderlineText(true);
 		}
+		
 	}
 
 	// �õ�����߶�
@@ -284,7 +286,7 @@ public class DateWidgetDayCell extends View {
 		anim.setDuration(ANIM_ALPHA_DURATION);
 		anim.startNow();
 		view.startAnimation(anim);
-	}
+	}  
 
 	public void CreateReminder(Canvas canvas, int Color) {
 		pt.setStyle(Paint.Style.FILL_AND_STROKE);

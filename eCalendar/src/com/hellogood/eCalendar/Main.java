@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Menu;
@@ -21,7 +22,7 @@ public class Main extends Activity {
 	private Calendar cal = Calendar.getInstance();
 	private TextView textDate = null;
 	private ArrayList<DateWidgetDayCell> days = new ArrayList<DateWidgetDayCell>();
-
+	private LinearLayout dateLayout = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,10 +59,14 @@ public class Main extends Activity {
 
 		WindowManager windowManager = getWindowManager();
 		Display display = windowManager.getDefaultDisplay();
-		int topHeight = findViewById(R.id.layout_top).getHeight();
-		int bottomHeight = findViewById(R.id.layout_bottom).getHeight();
+		int topHeight = findViewById(R.id.layout_top).getLayoutParams().height;
+		int bottomHeight = findViewById(R.id.layout_bottom).getLayoutParams().height;
+		int statusHeight = findViewById(R.id.layout_top).getTop();
 		int calendarHeight = display.getHeight() - topHeight - bottomHeight;
-		generateCalendarMain(display.getWidth());
+		Rect frame = new Rect();
+		getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+		int statusBarHeight = frame.top;
+		generateCalendarMain(display.getWidth(), calendarHeight);
 		updateCalendar();
 	}
 
@@ -78,16 +83,16 @@ public class Main extends Activity {
 		textDate.setText(date);
 	}
 
-	private View generateCalendarMain(int width) {
+	private View generateCalendarMain(int width, int height) {
 		RelativeLayout layContent = (RelativeLayout) findViewById(R.id.layout_calendar);
 		// layContent.setPadding(1, 0, 1, 0);
 		layContent.setBackgroundColor(Color.argb(255, 105, 105, 103));
 
 		LinearLayout layRow = (LinearLayout) findViewById(R.id.layout_calendar_header);
 		// layRow.setBackgroundColor(Color.argb(255, 207, 207, 205));
-
+		int headerHeight = 50;
 		for (int iDay = 0; iDay < 7; iDay++) {
-			DateWidgetDayHeader day = new DateWidgetDayHeader(this, width / 7, 50);
+			DateWidgetDayHeader day = new DateWidgetDayHeader(this, width / 7, headerHeight);
 
 			final int iWeekDay = DayStyle.getWeekDay(iDay, Calendar.SUNDAY);
 			day.setData(iWeekDay);
@@ -101,12 +106,14 @@ public class Main extends Activity {
 		int e = cal4Calc.get(Calendar.WEEK_OF_MONTH);
 		int weeks = e - b + 1;
 
-		LinearLayout dateLayout = (LinearLayout) findViewById(R.id.layout_calendar_date);
+		int cellHeight = (height - headerHeight) / weeks;
+
+		dateLayout = (LinearLayout) findViewById(R.id.layout_calendar_date);
 		for (int i = 0; i < weeks; i++) {
 
 			LinearLayout dateRow = createLayout(LinearLayout.HORIZONTAL);
 			for (int iDay = 0; iDay < 7; iDay++) {
-				DateWidgetDayCell dayCell = new DateWidgetDayCell(this, width / 7, 80);
+				DateWidgetDayCell dayCell = new DateWidgetDayCell(this, width / 7, cellHeight);
 				days.add(dayCell);
 				dateRow.addView(dayCell);
 			}
@@ -125,15 +132,21 @@ public class Main extends Activity {
 	}
 
 	private void updateCalendar() {
+		dateLayout.invalidate();
 		Calendar cal4Calc = new GregorianCalendar(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 1);
 		int currentMonth = cal.get(Calendar.MONTH);
-		int start = cal4Calc.get(Calendar.DAY_OF_WEEK) - 1;		
+		int start = cal4Calc.get(Calendar.DAY_OF_WEEK) - 1;
+
 		for (int i = start; i < days.size(); i++) {
+			days.get(i).invalidate();
 			days.get(i).setData(cal4Calc.get(Calendar.YEAR), cal4Calc.get(Calendar.MONTH), cal4Calc.get(Calendar.DATE), false, false, 1, false);
 			cal4Calc.add(Calendar.DATE, 1);
 			if (cal4Calc.get(Calendar.MONTH) > currentMonth) {
 				break;
 			}
 		}
+		for (int i = 0; i < start; i++) {
+			days.get(i).invalidate();
+		}		 
 	}
 }
