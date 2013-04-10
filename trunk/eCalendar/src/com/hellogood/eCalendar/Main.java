@@ -6,7 +6,6 @@ import java.util.GregorianCalendar;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Menu;
@@ -60,12 +59,10 @@ public class Main extends Activity {
 		WindowManager windowManager = getWindowManager();
 		Display display = windowManager.getDefaultDisplay();
 		int topHeight = findViewById(R.id.layout_top).getLayoutParams().height;
-		int bottomHeight = findViewById(R.id.layout_bottom).getLayoutParams().height;
-		int statusHeight = findViewById(R.id.layout_top).getTop();
-		int calendarHeight = display.getHeight() - topHeight - bottomHeight;
-		Rect frame = new Rect();
-		getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
-		int statusBarHeight = frame.top;
+		int bottomHeight = findViewById(R.id.layout_bottom).getLayoutParams().height;		
+		int calendarHeight = display.getHeight() - topHeight - bottomHeight;		
+		int statusBarHeight = getStatusBarHeight();
+		calendarHeight = calendarHeight - statusBarHeight;
 		generateCalendarMain(display.getWidth(), calendarHeight);
 		updateCalendar();
 	}
@@ -109,6 +106,7 @@ public class Main extends Activity {
 		int cellHeight = (height - headerHeight) / weeks;
 
 		dateLayout = (LinearLayout) findViewById(R.id.layout_calendar_date);
+		dateLayout.setBackgroundColor(Color.WHITE);
 		for (int i = 0; i < weeks; i++) {
 
 			LinearLayout dateRow = createLayout(LinearLayout.HORIZONTAL);
@@ -136,8 +134,8 @@ public class Main extends Activity {
 		Calendar cal4Calc = new GregorianCalendar(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 1);
 		int currentMonth = cal.get(Calendar.MONTH);
 		int start = cal4Calc.get(Calendar.DAY_OF_WEEK) - 1;
-
-		for (int i = start; i < days.size(); i++) {
+		cal4Calc.add(Calendar.DAY_OF_MONTH, -start);
+		for (int i = 0; i < days.size(); i++) {
 			days.get(i).invalidate();
 			days.get(i).setData(cal4Calc.get(Calendar.YEAR), cal4Calc.get(Calendar.MONTH), cal4Calc.get(Calendar.DATE), false, false, 1, false);
 			cal4Calc.add(Calendar.DATE, 1);
@@ -149,4 +147,27 @@ public class Main extends Activity {
 			days.get(i).invalidate();
 		}		 
 	}
+	
+	 public int getStatusBarHeight()  
+	    {  
+	        Class<?> c = null;  
+	        Object obj = null;  
+	        java.lang.reflect.Field field = null;  
+	        int x = 0;  
+	        int statusBarHeight = 0;  
+	        try  
+	        {  
+	            c = Class.forName("com.android.internal.R$dimen");  
+	            obj = c.newInstance();  
+	            field = c.getField("status_bar_height");  
+	            x = Integer.parseInt(field.get(obj).toString());  
+	            statusBarHeight = getResources().getDimensionPixelSize(x);  
+	            return statusBarHeight;  
+	        }  
+	        catch (Exception e)  
+	        {  
+	            e.printStackTrace();  
+	        }  
+	        return statusBarHeight;  
+	    }  
 }

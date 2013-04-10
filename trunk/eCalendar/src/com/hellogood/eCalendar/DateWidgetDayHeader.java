@@ -56,7 +56,7 @@ public class DateWidgetDayHeader extends View {
 		pt.setTextSize(fTextSize);
 		pt.setAntiAlias(true);
 		pt.setFakeBoldText(true);
-		pt.setColor(Color.CYAN);
+		pt.setColor(Color.BLACK);
 		
 		// draw day name
 		final String sDayName = DayStyle.getWeekDayName(iWeekDay);

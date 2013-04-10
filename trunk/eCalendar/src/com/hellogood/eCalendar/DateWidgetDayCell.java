@@ -36,6 +36,8 @@ public class DateWidgetDayCell extends View {
 	// �����С
 	private static final int fTextSize = 28;
 	private Lunar lunar = null;
+	private ChineseCalendarGB lunar2 = new ChineseCalendarGB();
+	private ChineseCalendar lunar3 = new ChineseCalendar();
 	// ��Ԫ��
 	private OnItemClick itemClick = null;
 	private Paint pt = new Paint();
@@ -206,8 +208,12 @@ public class DateWidgetDayCell extends View {
 		if (iDateYear >= 1900) {
 			lunar = new Lunar(cal);
 			lDate = lunar.getChineseDay();
+			lunar2.setGregorian(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));	
+
+			lunar3.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+			
 			pt.setTextSize(18);
-			canvas.drawText(lDate, iPosX, iPosY, pt);
+			canvas.drawText(lunar3.getChinese(ChineseCalendar.CHINESE_DATE), iPosX, iPosY, pt);
 
 			pt.setUnderlineText(true);
 		}
