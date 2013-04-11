@@ -49,6 +49,8 @@ public class Lunar {
 
 	// ====== 传回农历 y年闰哪个月 1-12 , 没闰传回 0
 	final private static int leapMonth(int y) {
+		Log.e("------------", lunarInfo.length + " " + y + " " + (y - 1900) + " " + lunarInfo[y - 1900]);
+		System.out.println(y + " " + lunarInfo[y - 1900]);
 		return (int) (lunarInfo[y - 1900] & 0xf);
 	}
 
@@ -78,9 +80,9 @@ public class Lunar {
 		int num = year - 1900 + 36;
 		return (cyclicalm(num));
 	}
-	
-	public Lunar(){
-		
+
+	public Lunar() {
+
 	}
 
 	/** */
@@ -179,9 +181,11 @@ public class Lunar {
 	public String getChineseMonth() {
 		return cyclical() + animalsYear() + (leap ? "闰" : "") + chineseNumber[month - 1] + "月";
 	}
+
 	public String getChineseDay() {
 		return getChinaDayString(day);
 	}
+
 	public static void main(String[] args) throws ParseException {
 		Calendar today = Calendar.getInstance();
 		today.setTime(chineseDateFormat.parse("2013年2月24日"));
