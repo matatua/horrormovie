@@ -3,9 +3,11 @@ package com.hellogood.eCalendar;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -18,6 +20,7 @@ public class CalendarList extends Activity {
 	private Calendar cal = Calendar.getInstance();
 	private GridView gridview = null;
 	private TextView textDate = null;
+	private ChineseCalendarGB chineseCalendar = new ChineseCalendarGB();
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -26,14 +29,14 @@ public class CalendarList extends Activity {
 		// 添加消息处理
 		gridview.setOnItemClickListener(new ItemClickListener());
 		textDate = (TextView) findViewById(R.id.text_date);
-		updateMonth(cal, textDate);
+		// updateMonth(cal, textDate);
 		updateCalendar();
 
 		Button preBtn = (Button) findViewById(R.id.btn_pre_month);
 		preBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				cal.add(Calendar.MONTH, -1);
-				updateMonth(cal, textDate);
+				// updateMonth(cal, textDate);
 				updateCalendar();
 			}
 		});
@@ -42,7 +45,7 @@ public class CalendarList extends Activity {
 		nextBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				cal.add(Calendar.MONTH, 1);
-				updateMonth(cal, textDate);
+				// updateMonth(cal, textDate);
 				updateCalendar();
 			}
 		});
@@ -58,6 +61,12 @@ public class CalendarList extends Activity {
 	}
 
 	private void updateCalendar() {
+		chineseCalendar.setGregorian(cal.get(Calendar.YEAR), (cal.get(Calendar.MONTH) + 1), 1);
+		chineseCalendar.computeChineseFields();
+		chineseCalendar.computeSolarTerms();
+		String date = cal.get(Calendar.YEAR) + "年" + (cal.get(Calendar.MONTH) + 1) + "月";
+		date += " " + chineseCalendar.getYearString() + chineseCalendar.getMonthString();
+		textDate.setText(date);
 		// 生成动态数组，并且转入数据
 		ArrayList<HashMap<String, Object>> lstImageItem = new ArrayList<HashMap<String, Object>>();
 		/*
@@ -68,19 +77,30 @@ public class CalendarList extends Activity {
 		 */
 		int month = cal.get(Calendar.MONTH);
 		cal = getFristDayOfMonth(cal);
-		do {
+		if (month == 8) {
+			System.out.println(cal.get(Calendar.MONTH));
+		}
+		for (int i = 0; i < 42; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			if (cal.get(Calendar.MONTH) == month) {
 				map.put("ItemText", cal.get(Calendar.DAY_OF_MONTH));// 添加图像资源的ID
-				Lunar lunar = new Lunar(cal);
-				map.put("ItemText2", lunar.getChineseDay());// 按序号做ItemText
+				chineseCalendar.setGregorian(cal.get(Calendar.YEAR), (cal.get(Calendar.MONTH) + 1),
+						cal.get(Calendar.DAY_OF_MONTH));
+				chineseCalendar.computeChineseFields();
+				chineseCalendar.computeSolarTerms();
+				map.put("ItemText2", chineseCalendar.getDateString());// 按序号做ItemText
 			} else {
 				map.put("ItemText", "");// 添加图像资源的ID
 				map.put("ItemText2", "");// 按序号做ItemText
 			}
 			lstImageItem.add(map);
 			cal.add(Calendar.DAY_OF_MONTH, 1);
-		} while (cal.get(Calendar.MONTH) <= month);
+			Log.e("---------------", cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH));
+			if (cal.get(Calendar.MONTH) > month) {
+				break;
+			}
+		}
+
 		if (cal.get(Calendar.MONTH) > month) {
 			cal.add(Calendar.MONTH, -1);
 		}
@@ -99,12 +119,13 @@ public class CalendarList extends Activity {
 		gridview.setAdapter(saImageItems);
 	}
 
-	private void updateMonth(Calendar cal, TextView textDate) {
-		String date = cal.get(Calendar.YEAR) + "年" + (cal.get(Calendar.MONTH) + 1) + "月";
-		Lunar lunar = new Lunar(cal);
-		date += " " + lunar.getChineseMonth();
-		textDate.setText(date);
-	}
+	// private void updateMonth(Calendar cal, TextView textDate) {
+	// String date = cal.get(Calendar.YEAR) + "年" + (cal.get(Calendar.MONTH) +
+	// 1) + "月";
+	// Lunar lunar = new Lunar(cal);
+	// date += " " + lunar.getChineseMonth();
+	// textDate.setText(date);
+	// }
 
 	// 当AdapterView被单击(触摸屏或者键盘)，则返回的Item单击事件
 	class ItemClickListener implements OnItemClickListener {
