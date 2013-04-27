@@ -3,7 +3,6 @@ package com.hellogood.eCalendar;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -19,17 +18,39 @@ import android.widget.TextView;
 public class CalendarList extends Activity {
 	private Calendar cal = Calendar.getInstance();
 	private GridView gridview = null;
+	private GridView titleview = null;
 	private TextView textDate = null;
 	private ChineseCalendarGB chineseCalendar = new ChineseCalendarGB();
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		titleview = (GridView) findViewById(R.id.titleview);
 		gridview = (GridView) findViewById(R.id.gridview);
 		// 添加消息处理
 		gridview.setOnItemClickListener(new ItemClickListener());
 		textDate = (TextView) findViewById(R.id.text_date);
 		// updateMonth(cal, textDate);
+
+		ArrayList<HashMap<String, Object>> lstImageItem = new ArrayList<HashMap<String, Object>>();
+		// 生成适配器的ImageItem <====> 动态数组的元素，两者一一对应
+		SimpleAdapter saImageItems = new SimpleAdapter(this, // 没什么解释
+				lstImageItem,// 数据来源
+				R.layout.title_item,// night_item的XML实现
+
+				// 动态数组与ImageItem对应的子项
+				new String[] { "WeekText" },
+
+				// ImageItem的XML文件里面的一个ImageView,两个TextView ID
+				new int[] { R.id.TitleText });
+		String[] weekDays = { "日", "一", "二", "三", "四", "五", "六" };
+		for (int i = 0; i < 7; i++) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("WeekText", weekDays[i]);// 添加图像资源的ID
+			lstImageItem.add(map);
+		}
+		titleview.setAdapter(saImageItems);
+
 		updateCalendar();
 
 		Button preBtn = (Button) findViewById(R.id.btn_pre_month);
@@ -69,12 +90,7 @@ public class CalendarList extends Activity {
 		textDate.setText(date);
 		// 生成动态数组，并且转入数据
 		ArrayList<HashMap<String, Object>> lstImageItem = new ArrayList<HashMap<String, Object>>();
-		/*
-		 * for (int i = 0; i < 30; i++) { HashMap<String, Object> map = new
-		 * HashMap<String, Object>(); map.put("ItemText", "神");// 添加图像资源的ID
-		 * map.put("ItemText2", "NO." + String.valueOf(i));// 按序号做ItemText
-		 * lstImageItem.add(map); }
-		 */
+
 		int month = cal.get(Calendar.MONTH);
 		cal = getFristDayOfMonth(cal);
 		if (month == 8) {
@@ -95,13 +111,14 @@ public class CalendarList extends Activity {
 			}
 			lstImageItem.add(map);
 			cal.add(Calendar.DAY_OF_MONTH, 1);
-			Log.e("---------------", cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH));
+			Log.e("---------------",
+					cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DAY_OF_MONTH));
 			if (cal.get(Calendar.MONTH) > month) {
 				break;
 			}
 		}
 
-		if (cal.get(Calendar.MONTH) > month) {
+		if (cal.get(Calendar.MONTH) > month || cal.get(Calendar.MONTH) == 0) {
 			cal.add(Calendar.MONTH, -1);
 		}
 
